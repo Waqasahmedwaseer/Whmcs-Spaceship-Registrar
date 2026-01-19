@@ -1,0 +1,68 @@
+{
+    "schema": "1.0",
+    "type": "whmcs-addons",
+    "name": "email_verification_pro",
+    "license": "Proprietary",
+    "category": "utilities",
+    "description": {
+        "name": "Email Verification Pro",
+        "tagline": "Comprehensive email verification with 2FA and fraud prevention for WHMCS",
+        "long": "Email Verification Pro is a comprehensive email verification module that ensures customers verify their email addresses before accessing their account or completing checkout. Features include email-based Two-Factor Authentication (2FA), automatic account termination, disposable email blocking, IP banning, customizable email templates, and detailed activity logging.",
+        "features": [
+            "Two verification modes: All Pages or Checkout Only",
+            "Email-based Two-Factor Authentication (2FA)",
+            "Trusted device remembering for 2FA",
+            "Auto-terminate unverified accounts after X days",
+            "Auto-delete unverified accounts with no orders",
+            "Resend verification reminders automatically",
+            "Ban specific email addresses",
+            "Ban IP addresses",
+            "Block disposable email providers (12+ pre-loaded)",
+            "Google reCAPTCHA v3 integration",
+            "Cloudflare Turnstile integration",
+            "Lock email changes for unverified users",
+            "Customizable email templates with live preview",
+            "Allow/deny support ticket access",
+            "Activity logging and reporting",
+            "Admin dashboard with real-time statistics",
+            "Sync existing clients to verification system",
+            "Works with WHMCS Six and Twenty-One templates"
+        ]
+    },
+    "logo": {
+        "filename": "logo.png"
+    },
+    "support": {
+        "homepage": "https://waqasahmedwaseer.com",
+        "email": "contact@waqasahmedwaseer.com",
+        "docs_url": "https://waqasahmedwaseer.com/docs/email-verification-pro"
+    },
+    "authors": [
+        {
+            "name": "Waqas Ahmed Waseer",
+            "homepage": "https://waqasahmedwaseer.com"
+        }
+    ],
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "build": "stable"
+    },
+    "hooks": {
+        "enabled": true
+    },
+    "api_requirements": {
+        "minimum_whmcs_version": "7.10.0",
+        "maximum_whmcs_version": "8.99.99"
+    },
+    "module_requirements": {
+        "php": {
+            "minimum": "7.4.0"
+        },
+        "extensions": [
+            "curl",
+            "json"
+        ]
+    }
+}

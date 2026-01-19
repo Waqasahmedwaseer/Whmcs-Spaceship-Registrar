@@ -1,0 +1,320 @@
+<?php
+/**
+ * Email Verification Pro - Client Area Controller
+ *
+ * Handles client-facing verification pages.
+ *
+ * @copyright 2026
+ * @license Proprietary
+ */
+
+if (!defined("WHMCS")) {
+    die("This file cannot be accessed directly");
+}
+
+use WHMCS\Database\Capsule;
+
+require_once __DIR__ . '/lib/EmailVerificationHelper.php';
+require_once __DIR__ . '/lib/TwoFactorAuthHelper.php';
+
+use WHMCS\Module\Addon\EmailVerificationPro\EmailVerificationHelper;
+use WHMCS\Module\Addon\EmailVerificationPro\TwoFactorAuthHelper;
+
+/**
+ * Client Area Page Handler
+ *
+ * @param array $vars
+ * @return array
+ */
+function email_verification_pro_clientarea($vars)
+{
+    $action = isset($_GET['action']) ? $_GET['action'] : 'verify';
+    $config = EmailVerificationHelper::getModuleConfig();
+
+    // Handle token verification via GET
+    if (isset($_GET['token'])) {
+        $token = $_GET['token'];
+        $result = EmailVerificationHelper::verifyToken($token);
+
+        if (isset($result['success']) && $result['success']) {
+            // Verification successful
+            $templateVars = [
+                'success' => true,
+                'message' => 'Your email has been verified successfully!',
+                'redirectUrl' => getRedirectUrl($config),
+            ];
+
+            return [
+                'pagetitle' => 'Email Verified',
+                'templatefile' => 'verify_success',
+                'vars' => $templateVars,
+            ];
+        } else {
+            // Verification failed
+            $templateVars = [
+                'success' => false,
+                'error' => $result['error'] ?? 'Verification failed.',
+                'showResend' => true,
+            ];
+
+            return [
+                'pagetitle' => 'Verification Failed',
+                'templatefile' => 'verify_error',
+                'vars' => $templateVars,
+            ];
+        }
+    }
+
+    // Handle POST actions
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $postAction = $_POST['action'] ?? '';
+
+        switch ($postAction) {
+            case 'resend':
+                return handleResend($vars, $config);
+            case 'verify_captcha':
+                return handleCaptchaVerification($vars, $config);
+            case 'verify_2fa':
+                return handle2FAVerification($vars, $config);
+            case 'resend_2fa':
+                return handle2FAResend($vars, $config);
+        }
+    }
+
+    // Handle pages
+    switch ($action) {
+        case 'twofa':
+            return renderTwoFAPage($vars, $config);
+        case 'verify':
+        default:
+            return renderVerifyPage($vars, $config);
+    }
+}
+
+/**
+ * Render 2FA Verification Page
+ */
+function renderTwoFAPage($vars, $config)
+{
+    if (!isset($_SESSION['evp_2fa_pending']) || !$_SESSION['evp_2fa_pending']) {
+        header('Location: clientarea.php');
+        exit;
+    }
+
+    $clientId = $_SESSION['evp_2fa_client_id'];
+    $client = Capsule::table('tblclients')->where('id', $clientId)->first();
+
+    return [
+        'pagetitle' => 'Login Verification',
+        'templatefile' => 'twofa_verify',
+        'vars' => [
+            'maskedEmail' => maskEmail($client->email),
+            'captchaType' => $config['captcha_type'],
+            'recaptchaSiteKey' => $config['recaptcha_site_key'],
+            'turnstileSiteKey' => $config['turnstile_site_key'],
+            'error' => $_SESSION['evp_2fa_error'] ?? '',
+            'codeLength' => $config['twofa_code_length'],
+        ],
+    ];
+}
+
+/**
+ * Handle 2FA Verification POST
+ */
+function handle2FAVerification($vars, $config)
+{
+    if (!isset($_SESSION['evp_2fa_pending']) || !$_SESSION['evp_2fa_pending']) {
+        header('Location: clientarea.php');
+        exit;
+    }
+
+    $clientId = $_SESSION['evp_2fa_client_id'];
+    $code = $_POST['code'] ?? '';
+
+    $result = TwoFactorAuthHelper::verifyCode($clientId, $code);
+
+    if ($result['success']) {
+        // Verification successful
+        unset($_SESSION['evp_2fa_pending'], $_SESSION['evp_2fa_client_id'], $_SESSION['evp_2fa_error']);
+        
+        // Log in the user if not already logged in
+        if (!isset($_SESSION['uid'])) {
+            $_SESSION['uid'] = $clientId;
+        }
+
+        header('Location: clientarea.php');
+        exit;
+    } else {
+        $_SESSION['evp_2fa_error'] = $result['error'];
+        header('Location: index.php?m=email_verification_pro&action=twofa');
+        exit;
+    }
+}
+
+/**
+ * Handle 2FA Resend POST
+ */
+function handle2FAResend($vars, $config)
+{
+    if (!isset($_SESSION['evp_2fa_pending']) || !$_SESSION['evp_2fa_pending']) {
+        header('Location: clientarea.php');
+        exit;
+    }
+
+    $clientId = $_SESSION['evp_2fa_client_id'];
+    $client = Capsule::table('tblclients')->where('id', $clientId)->first();
+
+    $code = TwoFactorAuthHelper::createCode($clientId, $client->email);
+    TwoFactorAuthHelper::sendCode($clientId, $code);
+
+    $_SESSION['evp_2fa_error'] = 'A new verification code has been sent.';
+    header('Location: index.php?m=email_verification_pro&action=twofa');
+    exit;
+}
+
+/**
+ * Render Main Verification Page (moved from main function)
+ */
+function renderVerifyPage($vars, $config)
+{
+    $clientId = isset($_SESSION['uid']) ? (int) $_SESSION['uid'] : 0;
+
+    if ($clientId <= 0) {
+        // Not logged in
+        return [
+            'pagetitle' => 'Verification Required',
+            'templatefile' => 'verify_login_required',
+            'vars' => [],
+        ];
+    }
+
+    // Check if already verified
+    if (EmailVerificationHelper::isClientVerified($clientId)) {
+        return [
+            'pagetitle' => 'Already Verified',
+            'templatefile' => 'already_verified',
+            'vars' => [
+                'redirectUrl' => 'clientarea.php',
+            ],
+        ];
+    }
+
+    // Get client info
+    $client = Capsule::table('tblclients')->where('id', $clientId)->first();
+    $token = Capsule::table('mod_email_verification_tokens')
+        ->where('client_id', $clientId)
+        ->first();
+
+    $templateVars = [
+        'clientId' => $clientId,
+        'email' => $client ? $client->email : '',
+        'maskedEmail' => $client ? maskEmail($client->email) : '',
+        'tokenExists' => $token !== null,
+        'tokenExpired' => $token ? strtotime($token->expires_at) < time() : false,
+        'captchaType' => $config['captcha_type'],
+        'recaptchaSiteKey' => $config['recaptcha_site_key'],
+        'turnstileSiteKey' => $config['turnstile_site_key'],
+        'allowSupportTickets' => $config['allow_support_tickets'],
+        'resendMessage' => $_SESSION['evp_resend_message'] ?? '',
+    ];
+
+    // Clear session message
+    unset($_SESSION['evp_resend_message']);
+
+    return [
+        'pagetitle' => 'Verify Your Email',
+        'templatefile' => 'verify_required',
+        'vars' => $templateVars,
+    ];
+}
+
+/**
+ * Handle resend verification email
+ */
+function handleResend($vars, $config)
+{
+    $clientId = isset($_SESSION['uid']) ? (int) $_SESSION['uid'] : 0;
+
+    if ($clientId <= 0) {
+        $_SESSION['evp_resend_message'] = 'Please log in to resend verification email.';
+        header('Location: index.php?m=email_verification_pro&action=verify');
+        exit;
+    }
+
+    // Verify captcha if configured
+    if ($config['captcha_type'] === 'recaptcha_v3') {
+        $recaptchaToken = $_POST['g-recaptcha-response'] ?? '';
+        if (!EmailVerificationHelper::verifyRecaptcha($recaptchaToken)) {
+            $_SESSION['evp_resend_message'] = 'Captcha verification failed. Please try again.';
+            header('Location: index.php?m=email_verification_pro&action=verify');
+            exit;
+        }
+    }
+
+    if ($config['captcha_type'] === 'turnstile') {
+        $turnstileToken = $_POST['cf-turnstile-response'] ?? '';
+        if (!EmailVerificationHelper::verifyTurnstile($turnstileToken)) {
+            $_SESSION['evp_resend_message'] = 'Captcha verification failed. Please try again.';
+            header('Location: index.php?m=email_verification_pro&action=verify');
+            exit;
+        }
+    }
+
+    // Resend email
+    EmailVerificationHelper::resendVerificationEmail($clientId);
+    $_SESSION['evp_resend_message'] = 'Verification email has been resent. Please check your inbox.';
+    
+    header('Location: index.php?m=email_verification_pro&action=verify');
+    exit;
+}
+
+/**
+ * Handle captcha verification
+ */
+function handleCaptchaVerification($vars, $config)
+{
+    // This can be extended for additional captcha verification flows
+    return handleResend($vars, $config);
+}
+
+/**
+ * Get redirect URL after verification
+ */
+function getRedirectUrl($config)
+{
+    $redirect = $config['redirect_after_verify'] ?? 'clientarea';
+
+    switch ($redirect) {
+        case 'cart':
+            // Check if there are items in cart
+            if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                return 'cart.php?a=checkout';
+            }
+            return 'clientarea.php';
+
+        case 'previous':
+            return $_SESSION['evp_previous_url'] ?? 'clientarea.php';
+
+        case 'clientarea':
+        default:
+            return 'clientarea.php';
+    }
+}
+
+/**
+ * Mask email address for display
+ */
+function maskEmail($email)
+{
+    $parts = explode('@', $email);
+    if (count($parts) !== 2) {
+        return $email;
+    }
+
+    $name = $parts[0];
+    $domain = $parts[1];
+
+    $maskedName = substr($name, 0, 2) . str_repeat('*', max(strlen($name) - 4, 2)) . substr($name, -2);
+    
+    return $maskedName . '@' . $domain;
+}

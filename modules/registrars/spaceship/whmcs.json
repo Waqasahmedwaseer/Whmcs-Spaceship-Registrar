@@ -1,0 +1,65 @@
+{
+    "schema": "1.0",
+    "type": "whmcs-registrar",
+    "name": "spaceship",
+    "license": "MIT",
+    "category": "registrar",
+    "description": {
+        "name": "Spaceship.com Domain Registrar",
+        "tagline": "Full-featured domain registrar integration for Spaceship.com",
+        "long": "This module provides complete integration with Spaceship.com's domain registration API. Features include domain registration, transfers, renewals, DNS management, WHOIS privacy protection, nameserver management, and more.",
+        "features": [
+            "Domain Registration",
+            "Domain Transfer",
+            "Domain Renewal",
+            "Nameserver Management",
+            "DNS Record Management",
+            "WHOIS Contact Management",
+            "Privacy Protection (ID Protection)",
+            "Domain Lock/Unlock",
+            "EPP Code Retrieval",
+            "Child Nameserver (Glue Records) Management",
+            "Auto-Renewal Management",
+            "Domain Sync & Transfer Sync",
+            "Premium Domain Support",
+            "Async Operation Handling"
+        ]
+    },
+    "logo": {
+        "filename": "logo.png"
+    },
+    "support": {
+        "homepage": "https://spaceship.com",
+        "learn_more": "https://developers.spaceship.com",
+        "email": "support@spaceship.com",
+        "docs_url": "https://developers.spaceship.com/docs"
+    },
+    "authors": [
+        {
+            "name": "WHMCS Spaceship Module",
+            "homepage": "https://spaceship.com"
+        }
+    ],
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "build": "stable"
+    },
+    "hooks": {
+        "enabled": true
+    },
+    "api_requirements": {
+        "minimum_whmcs_version": "7.10.0",
+        "maximum_whmcs_version": "8.99.99"
+    },
+    "module_requirements": {
+        "php": {
+            "minimum": "7.4.0"
+        },
+        "extensions": [
+            "curl",
+            "json"
+        ]
+    }
+}
