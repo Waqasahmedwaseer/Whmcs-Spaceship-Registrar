@@ -1,118 +1,202 @@
-# Spaceship.com WHMCS Registrar Module
+<p align="center">
+  <img src="modules/registrars/spaceship/logo.png" alt="Spaceship WHMCS Registrar Module" width="120" />
+</p>
 
-Production-ready **WHMCS Domain Registrar Module** for [Spaceship.com](https://spaceship.com), with support for registration, transfers, renewals, DNS management, contacts, registrar lock, EPP, domain sync, and more.
+<h1 align="center">Spaceship.com WHMCS Registrar Module</h1>
+<h3 align="center">Complete WHMCS Domain Registrar Integration for Spaceship API</h3>
 
-![Spaceship Logo](modules/registrars/spaceship/logo.png)
+<p align="center">
+  <a href="https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar"><img src="https://img.shields.io/badge/Status-Active-success?style=flat-square" alt="Status" /></a>
+  <a href="https://www.whmcs.com"><img src="https://img.shields.io/badge/WHMCS-7.10%2B%20to%208.x-blue?style=flat-square" alt="WHMCS" /></a>
+  <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP" /></a>
+  <a href="./modules/registrars/spaceship/whmcs.json"><img src="https://img.shields.io/badge/Category-Registrar-orange?style=flat-square" alt="Category" /></a>
+  <a href="./modules/registrars/spaceship/whmcs.json"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License" /></a>
+</p>
 
-## What This Module Does
+<p align="center">
+  A production-focused <strong>WHMCS registrar module</strong> for Spaceship.com that supports registration,
+  transfers, renewals, DNS, contacts, EPP, lock/unlock, sync workflows, and async operation handling.
+</p>
 
-This module connects WHMCS to the Spaceship domain API so domain operations can be managed directly from your WHMCS admin/client workflows.
+---
 
-### Core Capabilities
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [WHMCS Registrar Functions](#whmcs-registrar-functions)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Repository Structure](#repository-structure)
+- [Logging & Debugging](#logging--debugging)
+- [Version Notes](#version-notes)
+- [SEO Keywords](#seo-keywords)
+- [License](#license)
+
+---
+
+## Overview
+
+This module integrates the **Spaceship domain API** with WHMCS registrar workflows so you can manage domain operations directly from WHMCS admin and client areas.
+
+It is designed for hosting businesses, domain resellers, and WHMCS developers who need reliable registrar automation and clean operational visibility.
+
+---
+
+## Key Features
 
 - Domain registration
-- Incoming transfer initiation
-- Domain renewals
+- Incoming domain transfer
+- Domain renewal
 - Nameserver get/save
 - WHOIS contact get/save
 - Registrar lock get/save
 - DNS records get/save (A, AAAA, CNAME, MX, TXT, NS, SRV)
 - EPP/Auth code retrieval
-- Child nameserver (glue) register/modify/delete
+- Child nameserver (glue records) create/modify/delete
 - ID protection toggle
 - Domain sync + transfer sync
-- Auto-renew save
+- Auto-renew management
 - Request delete + restore domain
-- Premium pricing lookup (`GetTldPricing`)
-- Realtime sync hints in admin (via hook)
+- Premium TLD pricing support (`GetTldPricing`)
+- Async operation handling for registrar actions
+- Optional realtime sync hints in admin domain view
+
+---
+
+## WHMCS Registrar Functions
+
+Implemented in `modules/registrars/spaceship/spaceship.php`:
+
+| Group | Functions |
+|---|---|
+| Registration | `spaceship_RegisterDomain` |
+| Transfer | `spaceship_TransferDomain`, `spaceship_TransferSync` |
+| Renewal | `spaceship_RenewDomain` |
+| Nameservers | `spaceship_GetNameservers`, `spaceship_SaveNameservers` |
+| Contacts | `spaceship_GetContactDetails`, `spaceship_SaveContactDetails` |
+| Availability | `spaceship_CheckAvailability` |
+| Registrar Lock | `spaceship_GetRegistrarLock`, `spaceship_SaveRegistrarLock` |
+| DNS | `spaceship_GetDNS`, `spaceship_SaveDNS` |
+| ID Protection | `spaceship_IDProtectToggle` |
+| EPP | `spaceship_GetEPPCode` |
+| Child Nameservers | `spaceship_RegisterNameserver`, `spaceship_ModifyNameserver`, `spaceship_DeleteNameserver` |
+| Sync | `spaceship_Sync`, `spaceship_TransferSync` |
+| Auto-Renew | `spaceship_SaveAutorenew` |
+| Domain Lifecycle | `spaceship_RequestDelete`, `spaceship_RestoreDomain` |
+| Pricing | `spaceship_GetTldPricing` |
+
+---
+
+## Requirements
+
+From module metadata and implementation:
+
+- WHMCS: `7.10.0` to `8.x`
+- PHP: `7.4+`
+- Extensions: `curl`, `json`
+- Valid Spaceship API credentials
+
+Metadata source: `modules/registrars/spaceship/whmcs.json`.
+
+---
+
+## Installation
+
+1. Upload module folder:
+
+```bash
+# Place the folder exactly here:
+/path/to/whmcs/modules/registrars/spaceship
+```
+
+2. In WHMCS Admin:
+- Go to `System Settings` -> `Domain Registrars`
+- Activate `Spaceship.com Domain Registrar`
+
+3. Configure API credentials and defaults.
+
+4. Assign registrar `spaceship` to your TLDs in WHMCS domain pricing settings.
+
+5. Ensure WHMCS cron and domain sync are enabled.
+
+---
+
+## Configuration
+
+Module settings from `spaceship_getConfigArray()`:
+
+| Setting | Type | Description |
+|---|---|---|
+| `APIKey` | text | Spaceship API key |
+| `APISecret` | password | Spaceship API secret |
+| `TestMode` | yes/no | Enable test mode endpoint |
+| `DefaultPrivacyProtection` | dropdown | Privacy level: `high`, `low`, `off` |
+| `DefaultAutoRenew` | yes/no | Enable auto-renew by default |
+| `DebugMode` | yes/no | Enable module-level request/response logging |
+| `EnableRealtimeSync` | yes/no | Show live registrar values in WHMCS admin domain view |
+
+---
 
 ## Repository Structure
 
 ```text
 modules/registrars/spaceship/
-├── spaceship.php              # Main registrar module functions
-├── hooks.php                  # Admin realtime sync view hook
+├── spaceship.php              # Main registrar module implementation
+├── hooks.php                  # Admin area realtime sync display hook
 ├── lib/
-│   ├── ApiClient.php          # HTTP client + auth + async handling
-│   └── TldRequirements.php    # TLD-specific requirement helpers
+│   ├── ApiClient.php          # API client, auth headers, async handling
+│   └── TldRequirements.php    # TLD-specific requirements logic
 ├── whmcs.json                 # WHMCS module metadata
 ├── logo.png
 └── README.md
 ```
 
-## Requirements
+---
 
-- WHMCS registrar module environment
-- PHP 7.4+
-- PHP extensions: `curl`, `json`
-- Valid Spaceship API credentials
+## Logging & Debugging
 
-From `whmcs.json`:
-- Minimum WHMCS version: `7.10.0`
-- Maximum WHMCS version: `8.99.99`
+When `DebugMode` is enabled, module calls are written via `logModuleCall`.
 
-## Installation
+WHMCS path:
+- `System Logs` -> `Module Log`
 
-1. Copy `spaceship` directory to your WHMCS registrar modules path:
-   - `/path/to/whmcs/modules/registrars/spaceship`
-2. In WHMCS Admin:
-   - `System Settings` -> `Domain Registrars`
-   - Activate **Spaceship.com Domain Registrar**
-3. Enter module configuration values (API credentials, mode, defaults).
-4. Assign registrar `spaceship` to supported TLDs in WHMCS.
-5. Enable domain sync cron in WHMCS if not already enabled.
+Recommended debugging flow:
+1. Verify API key/secret and mode.
+2. Reproduce one action (register/transfer/renew).
+3. Inspect request and response payloads in Module Log.
+4. Confirm TLD eligibility and contact payload requirements.
 
-## Configuration Options
+---
 
-Available options from `spaceship_getConfigArray()`:
+## Version Notes
 
-| Setting | Type | Purpose |
-|---|---|---|
-| `APIKey` | text | Spaceship API key |
-| `APISecret` | password | Spaceship API secret |
-| `TestMode` | yes/no | Toggle sandbox endpoint mode |
-| `DefaultPrivacyProtection` | dropdown | Default privacy level (`high`, `low`, `off`) |
-| `DefaultAutoRenew` | yes/no | Enable auto-renew by default on new registrations |
-| `DebugMode` | yes/no | Enable detailed module logging |
-| `EnableRealtimeSync` | yes/no | Show live registrar values in admin domain view |
+Latest documented improvements in module README (`modules/registrars/spaceship/README.md`):
 
-## WHMCS Registrar Functions Implemented
+- DNS pagination fix for large record sets
+- SRV record formatting fix
+- Contact payload improvements for optional fields and formatting
+- Client area privacy button cleanup
 
-| Function Group | Implemented |
-|---|---|
-| Registration | `RegisterDomain` |
-| Transfer | `TransferDomain`, `TransferSync` |
-| Renewal | `RenewDomain` |
-| Nameservers | `GetNameservers`, `SaveNameservers` |
-| Contacts | `GetContactDetails`, `SaveContactDetails` |
-| Availability | `CheckAvailability` |
-| Locking | `GetRegistrarLock`, `SaveRegistrarLock` |
-| DNS | `GetDNS`, `SaveDNS` |
-| Privacy | `IDProtectToggle` |
-| EPP | `GetEPPCode` |
-| Child NS | `RegisterNameserver`, `ModifyNameserver`, `DeleteNameserver` |
-| Sync | `Sync`, `TransferSync` |
-| Auto Renew | `SaveAutorenew` |
-| Lifecycle | `RequestDelete`, `RestoreDomain` |
-| Pricing | `GetTldPricing` |
+---
 
-## Logging and Troubleshooting
+## SEO Keywords
 
-When `DebugMode` is enabled:
-- API requests/responses are logged through `logModuleCall`.
-- Useful in WHMCS: `System Logs` -> `Module Log`.
+WHMCS registrar module, Spaceship WHMCS module, Spaceship domain API integration, WHMCS domain registrar integration, WHMCS domain transfer module, WHMCS DNS management module, WHMCS EPP code module, WHMCS nameserver management, WHMCS domain sync, WHMCS premium domain pricing, WHMCS registrar lock, WHMCS domain automation.
 
-If you face issues:
-1. Confirm API credentials and test/production mode.
-2. Check module log output for endpoint and payload errors.
-3. Verify TLD support and required fields.
-4. Re-test with a single domain in a staging WHMCS environment.
-
-## Notes
-
-- Some operations are asynchronous; module includes async operation handling in the API client.
-- Admin realtime sync highlighting is provided through `hooks.php` for domains using registrar `spaceship`.
+---
 
 ## License
 
-MIT License (as declared in module headers and `whmcs.json`).
+MIT License, as declared in:
+- `modules/registrars/spaceship/whmcs.json`
+- Module source headers in `modules/registrars/spaceship/spaceship.php`
+
+---
+
+## Author
+
+**Waqas Ahmed Waseer**
+
+- GitHub: https://github.com/Waqasahmedwaseer
