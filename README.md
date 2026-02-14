@@ -6,7 +6,7 @@
 <h3 align="center">Complete WHMCS Domain Registrar Integration for Spaceship API</h3>
 
 <p align="center">
-  <a href="https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar"><img src="https://img.shields.io/badge/Status-Active-success?style=flat-square" alt="Status" /></a>
+  <a href="https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar"><img src="https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar/blob/main/spaceship%20module.png" alt="Status" /></a>
   <a href="https://www.whmcs.com"><img src="https://img.shields.io/badge/WHMCS-7.10%2B%20to%208.x-blue?style=flat-square" alt="WHMCS" /></a>
   <a href="https://www.php.net"><img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP" /></a>
   <a href="./modules/registrars/spaceship/whmcs.json"><img src="https://img.shields.io/badge/Category-Registrar-orange?style=flat-square" alt="Category" /></a>
