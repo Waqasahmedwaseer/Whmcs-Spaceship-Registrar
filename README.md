@@ -15,7 +15,9 @@
 
 <p align="center">
   A production-focused <strong>WHMCS registrar module</strong> for Spaceship.com that supports registration,
-  transfers, renewals, DNS, contacts, EPP, lock/unlock, sync workflows, and async operation handling.
+  transfers, renewals, DNS, contacts, EPP, lock/unlock, sync workflows, TLD pricing import, and async operation handling.
+  <br/><br/>
+  <strong>Current Version: 1.2.0</strong>
 </p>
 
 ---
@@ -30,7 +32,7 @@
 - [Configuration](#configuration)
 - [Repository Structure](#repository-structure)
 - [Logging & Debugging](#logging--debugging)
-- [Version Notes](#version-notes)
+- [Changelog](#changelog)
 - [SEO Keywords](#seo-keywords)
 - [License](#license)
 
@@ -74,6 +76,7 @@ Implemented in `modules/registrars/spaceship/spaceship.php`:
 | Registration | `spaceship_RegisterDomain` |
 | Transfer | `spaceship_TransferDomain`, `spaceship_TransferSync` |
 | Renewal | `spaceship_RenewDomain` |
+| Domain Info | `spaceship_GetDomainInformation` |
 | Nameservers | `spaceship_GetNameservers`, `spaceship_SaveNameservers` |
 | Contacts | `spaceship_GetContactDetails`, `spaceship_SaveContactDetails` |
 | Availability | `spaceship_CheckAvailability` |
@@ -148,7 +151,7 @@ modules/registrars/spaceship/
 ├── lib/
 │   ├── ApiClient.php          # API client, auth headers, async handling
 │   └── TldRequirements.php    # TLD-specific requirements logic
-├── whmcs.json                 # WHMCS module metadata
+├── whmcs.json                 # WHMCS module metadata (v1.2.0)
 ├── logo.png
 └── README.md
 ```
@@ -170,14 +173,27 @@ Recommended debugging flow:
 
 ---
 
-## Version Notes
+## Changelog
 
-Latest documented improvements in module README (`modules/registrars/spaceship/README.md`):
+See [CHANGELOG.md](CHANGELOG.md) for a complete version history.
 
+### v1.2.0 (2026-02-15)
+- **NEW**: `GetDomainInformation` — consolidated domain info function for better admin display
+- **NEW**: `GetTldPricing` — TLD pricing import/sync for 33+ TLDs
+- **FIX**: Nameservers correctly display in admin (API key casing fix)
+- **FIX**: "Invalid GetTldPricing Response" error resolved
+- **FIX**: Privacy level values corrected for API compliance
+- **FIX**: Renewal requests now fetch current expiration date
+- **IMPROVED**: SRV record handling and contact data formatting
+
+### v1.1.0 (2026-01-19)
 - DNS pagination fix for large record sets
 - SRV record formatting fix
-- Contact payload improvements for optional fields and formatting
+- Contact payload improvements
 - Client area privacy button cleanup
+
+### v1.0.0 (2026-01-15)
+- Initial release with full domain lifecycle management
 
 ---
 

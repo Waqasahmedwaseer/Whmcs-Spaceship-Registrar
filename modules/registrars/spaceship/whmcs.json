@@ -7,7 +7,7 @@
     "description": {
         "name": "Spaceship.com Domain Registrar",
         "tagline": "Full-featured domain registrar integration for Spaceship.com",
-        "long": "This module provides complete integration with Spaceship.com's domain registration API. Features include domain registration, transfers, renewals, DNS management, WHOIS privacy protection, nameserver management, and more.",
+        "long": "This module provides complete integration with Spaceship.com's domain registration API. Features include domain registration, transfers, renewals, DNS management, WHOIS privacy protection, nameserver management, TLD pricing sync, and more.",
         "features": [
             "Domain Registration",
             "Domain Transfer",
@@ -22,7 +22,9 @@
             "Auto-Renewal Management",
             "Domain Sync & Transfer Sync",
             "Premium Domain Support",
-            "Async Operation Handling"
+            "Async Operation Handling",
+            "TLD Pricing Import & Sync",
+            "GetDomainInformation Support"
         ]
     },
     "logo": {
@@ -36,13 +38,13 @@
     },
     "authors": [
         {
-            "name": "WHMCS Spaceship Module",
-            "homepage": "https://spaceship.com"
+            "name": "Waqas Ahmed Waseer",
+            "homepage": "https://github.com/Waqasahmedwaseer"
         }
     ],
     "version": {
         "major": 1,
-        "minor": 0,
+        "minor": 2,
         "patch": 0,
         "build": "stable"
     },

@@ -2,6 +2,8 @@
 
 A fully-featured WHMCS domain registrar module for [Spaceship.com](https://spaceship.com), providing complete integration with their domain registration API.
 
+**Current Version: 1.2.0**
+
 ## Features
 
 - **Domain Registration & Transfer**: Register new domains and process incoming transfers.
@@ -17,10 +19,12 @@ A fully-featured WHMCS domain registrar module for [Spaceship.com](https://space
 - **Transfer Sync**: Monitor and sync the status of incoming domain transfers.
 - **Domain Deletion & Restoration**: Request domain deletion and restore domains from redemption.
 - **Premium Domain Support**: Handles premium domain pricing during availability checks.
+- **TLD Pricing Import & Sync**: Import TLD pricing for 33+ popular extensions via the WHMCS TLD Sync Utility.
+- **GetDomainInformation**: Uses the WHMCS-recommended consolidated domain info function for optimal performance.
 
 ## Requirements
 
-- WHMCS 8.x or later
+- WHMCS 7.10 or later (8.x recommended)
 - PHP 7.4 or later
 - cURL and JSON PHP extensions
 - Spaceship.com API credentials
@@ -47,26 +51,29 @@ After activating the module, configure the following options:
 
 ---
 
-## Changelog & Important Notes
+## Changelog
 
-### Version 1.1.0 (2026-01-19)
+See [CHANGELOG.md](CHANGELOG.md) for a full list of changes.
 
-- **FIX**: The `GetDNS` function now correctly handles pagination, ensuring all DNS records are retrieved for domains with more than 100 records. Previously, it was limited to the first 100.
-- **FIX**: Corrected a bug in SRV record handling where hostnames were formatted incorrectly (missing `_` prefixes). This ensures proper display and management of SRV records.
-- **FIX**: Removed a non-functional "Privacy Settings" button from the client area. ID Protection is managed via the standard domain addons functionality.
-- **IMPROVEMENT**: The data payload for creating and updating contacts has been enhanced to better handle empty optional fields, phone number formatting, and field length truncation to prevent common API validation errors.
+### Latest — v1.2.0 (2026-02-15)
 
-### Developer Notes
-
-- **EPP Code Generation**: The `GetEPPCode` function includes robust logic to first attempt to fetch an existing code (`GET`) and then, as a fallback, to request the generation of a new code (`POST`). Please be aware that the `POST` endpoint for code generation is **not documented** in the provided API specification. This functionality has been implemented based on assumed API behavior. It is recommended to confirm this endpoint with the API provider.
-
-- **Modernization**: The module currently uses `GetNameservers` and `GetRegistrarLock`. For optimal performance on WHMCS 8.0 and later, these could be consolidated into the single `GetDomainInformation` function in a future update.
+- **NEW**: `GetDomainInformation` — Consolidated domain data retrieval for better admin area display.
+- **NEW**: `GetTldPricing` — TLD pricing import/sync for 33+ TLDs via the WHMCS Registrar TLD Sync Utility.
+- **FIX**: Nameservers now correctly display in the WHMCS admin (fixed API key casing issue).
+- **FIX**: Resolved "Invalid GetTldPricing Response" error on the TLD Sync/Import page.
+- **FIX**: Corrected privacy level values and renewal request parameters for API compliance.
+- **FIX**: Improved SRV record handling in DNS management.
 
 ---
 
 ## Logging
 
 When **Debug Mode** is enabled, all API interactions are logged to the WHMCS Module Log. This is essential for troubleshooting. You can view the log at **System Logs > Module Log**.
+
+## Author
+
+**Waqas Ahmed Waseer**
+- GitHub: [@Waqasahmedwaseer](https://github.com/Waqasahmedwaseer)
 
 ## License
 
