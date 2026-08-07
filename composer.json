@@ -1,0 +1,22 @@
+{
+    "name": "waqasahmedwaseer/whmcs-spaceship-registrar",
+    "description": "A free and open-source WHMCS Spaceship registrar module to manage domain registration, renewal, transfer, and nameservers directly from WHMCS.",
+    "type": "library",
+    "keywords": ["whmcs", "spaceship", "domain-registrar", "domain-registration", "php"],
+    "homepage": "https://waqasahmedwaseer.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Waqas Ahmed",
+            "homepage": "https://waqasahmedwaseer.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar/issues",
+        "source": "https://github.com/Waqasahmedwaseer/Whmcs-Spaceship-Registrar"
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
